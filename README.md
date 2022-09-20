@@ -65,17 +65,17 @@ loadComponent(
     'KoroProductOrigin',
     'koro-product-origin-map'
 ).then(({ default: KoroProductOriginMap, type }) => {
-        if (type === 'cache-hit') {
-            return;
-        }
+    if (type === 'cache-hit') {
+        return;
+    }
 
-        PluginManager.register(
-            'KoroWorldMap',
-            KoroProductOriginMap,
-            element
-        );
-        PluginManager.initializePlugin('KoroWorldMap', element);
-    })
+    PluginManager.register(
+        'KoroWorldMap',
+        KoroProductOriginMap,
+        element
+    );
+    PluginManager.initializePlugin('KoroWorldMap', element);
+});
 ```
 
 Last but not least, create a new template file `views/storefront/base.html.twig` and populate the bundle loading path:
