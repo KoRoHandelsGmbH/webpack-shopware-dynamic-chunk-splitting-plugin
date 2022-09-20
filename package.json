@@ -1,0 +1,28 @@
+{
+  "name": "@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin",
+  "version": "1.0.0",
+  "description": "Webpack and browser library",
+  "main": "src/index.js",
+  "scripts": {
+    "changelog": "auto-changelog --config .auto-changelog && git add CHANGELOG.md && git commit -m \"NTR - Updates changelog\"",
+    "release": "release-it",
+    "release:dry-run": "release-it --dry-run"
+  },
+  "keywords": [
+    "shopware",
+    "webpack",
+    "plugin",
+    "chunk-splitting"
+  ],
+  "author": "klarstil",
+  "license": "MIT",
+  "dependencies": {
+    "@shopware-ag/webpack-copy-after-build": "^1.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
