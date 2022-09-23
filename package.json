@@ -1,6 +1,6 @@
 {
   "name": "@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Webpack plugin which allows you to mark certain files as entry points for dynamic imports which allows you to dynamically import components.",
   "main": "src/index.js",
   "scripts": {
