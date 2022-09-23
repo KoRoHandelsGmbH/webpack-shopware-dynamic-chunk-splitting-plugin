@@ -41,8 +41,8 @@ const loadComponent = (pluginName, chunkName, bundleLoadingPath = window.dynamic
     const transformedPluginName = toKebabCase(pluginName, false);
     const bundlePath = `${transformedPluginName}/storefront/js/${chunkName}.js`;
     const loadingPath = bundleLoadingPath.replace(
-        '?',
-        `/${bundlePath}?`
+        '14cdd85b63697b04af2302ece9ac3239',
+        `/${bundlePath}`
     );
 
     const script = document.createElement('script');

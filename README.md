@@ -86,7 +86,7 @@ Last but not least, create a new template file `views/storefront/base.html.twig`
 {% block base_body_script %}
     <script type="text/javascript">
         if (!window.hasOwnProperty('dynamicLoadingBundlePath')) {
-            window.dynamicLoadingBundlePath = '{{ asset('/bundles') }}';
+            window.dynamicLoadingBundlePath = '{{ asset('/bundles/14cdd85b63697b04af2302ece9ac3239') }}';
         }
     </script>
     {{ parent() }}
