@@ -96,6 +96,7 @@ The `loadComponent` method is used to dynamically import custom entry points for
 
 * `pluginName` - Name of your plugin
 * `chunkName` - Chunk name which can be freely choosen in the webpack config
+* `cacheKey` - Chunk ID from Webpack
 * `bundleLoadingPath` - Base loading path. It points to your `public/bundles` directory.
 
 The method returns a promise with the loaded plugin class and a type:
