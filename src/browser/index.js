@@ -30,7 +30,7 @@ const getChunkKeyByName = (chunkName) => {
  * @param {string} pluginName
  * @param {string} chunkName
  * @param {string} cacheKey
- * @param {string} [bundleLoadingPath='/bundles?12321123']
+ * @param {string} [bundleLoadingPath='/bundles/14cdd85b63697b04af2302ece9ac3239?12321123']
  * @returns {Promise<Error>|Promise<Module>}
  */
 const loadComponent = async (pluginName, chunkName, cacheKey, bundleLoadingPath = window.dynamicLoadingBundlePath) => {
@@ -46,7 +46,7 @@ const loadComponent = async (pluginName, chunkName, cacheKey, bundleLoadingPath 
     const transformedPluginName = toKebabCase(pluginName, false);
 
     if (module.hot && module.hot.active) {
-        key = filePath;
+        key = cacheKey;
         if (!key) {
             return Promise.reject(new Error('Cache key not found.'));
         }

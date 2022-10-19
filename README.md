@@ -5,7 +5,7 @@
 ![NPM](https://img.shields.io/npm/l/@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin) ![npm (scoped)](https://img.shields.io/npm/v/@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin) ![node version](https://img.shields.io/badge/node-v16-brightgreen) ![npm](https://img.shields.io/npm/dm/@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin)
 </div>
 
-Webpack plugin which allows you to mark certain files as entry points for dynamic imports which allows you to dynamically import components.
+Webpack plugin which allows you to mark certain files as entry points for dynamic imports which allows you to dynamically import components. It supports the production as well as the hot module reloading mode.
 
 ## Installation
 
@@ -21,7 +21,7 @@ Install the NPM package and create a new file called `app/storefront/build/webpa
 const { WebpackShopwareDynamicChunkSplittingPlugin } = require('@korodrogerie/webpack-shopware-dynamic-chunk-splitting-plugin');
 
 module.exports = ({ config }) => {
-    config.plugins.push(new WebpackShopwareDynamicChunkSplittingPlugin({
+    const dynamicChunkSplittingPlugin = new WebpackShopwareDynamicChunkSplittingPlugin({
         plugins: [{
             // Plugin name
             'KoroProductOrigin': {
@@ -32,29 +32,17 @@ module.exports = ({ config }) => {
                 )
             }
         }]
-    }));
+    })
+    config.plugins.push(dynamicChunkSplittingPlugin);
 }
 ```
 
-Next up, we're having to include the browser library to load components dynamically:
+Next up, we're having to include the browser library to load components dynamically in the `webpack.config.js`. The plugin instance has a method called `getConfiguration()`
+which provides the necessary configuration for the browser library to work:
 
 ```js
-return {
-    resolve: {
-        alias: {
-            '@webpack-shopware-dynamic-chunk-splitting-plugin': resolve(
-                join(
-                    __dirname,
-                    '..',
-                    'node_modules',
-                    '@korodrogerie',
-                    'webpack-shopware-dynamic-chunk-splitting-plugin',
-                    'src',
-                    'browser'
-                )
-            )
-        },
-    },
+module.exports = ({ config }) => {
+    return dynamicChunkSplittingPlugin.getConfiguration();
 };
 ```
 
@@ -63,7 +51,8 @@ Within your Shopware 6 storefront JavaScript files you can import the component 
 ```js
 loadComponent(
     'KoroProductOrigin',
-    'koro-product-origin-map'
+    'koro-product-origin-map',
+    require.resolveWeak('./plugin/koro-product-origin-map.js')
 ).then(({ default: KoroProductOriginMap, type }) => {
     if (type === 'cache-hit') {
         return;
