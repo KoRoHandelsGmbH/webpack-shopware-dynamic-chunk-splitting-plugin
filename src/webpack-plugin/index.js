@@ -1,8 +1,11 @@
 const WebpackCopyAfterBuildPlugin = require('@shopware-ag/webpack-copy-after-build');
 const {
     toKebabCase,
+    toPascalCase,
     hasProperty
 } = require('../utils');
+
+const { resolve, join } = require("path");
 
 const PLUGIN_NAME = 'WebpackShopwareDynamicChunkSplittingPlugin';
 const WEBPACK_COPY_AFTER_BUILD_PLUGIN_NAME = 'WebpackCopyAfterBuild';
@@ -33,6 +36,25 @@ new WebpackShopwareDynamicChunkSplittingPlugin({
         }
     }
     apply(compiler) {
+        const options = compiler.options;
+
+        if (process.env.MODE === 'hot') {
+            const pluginProvideDefinitions = this.options.plugins.reduce((accumulator, plugin) => {
+                const name = Object.keys(plugin)[0];
+                const transformedName = toKebabCase(name);
+                const definition = plugin[name];
+
+                accumulator.push(...Object.keys(definition).map((key) => {
+                    return definition[key];
+                }));
+
+                return accumulator;
+            }, []);
+
+            compiler.options.entry.storefront = [...compiler.options.entry.storefront, ...pluginProvideDefinitions];
+            return;
+        }
+
         const pluginsMap = this.options.plugins.reduce((accumulator, plugin) => {
             const name = Object.keys(plugin)[0];
             const transformedName = toKebabCase(name);
@@ -112,6 +134,22 @@ new WebpackShopwareDynamicChunkSplittingPlugin({
                 );
             });
         });
+    }
+
+    getConfiguration() {
+        return {
+            resolve: {
+                alias: {
+                    "@webpack-shopware-dynamic-chunk-splitting-plugin": resolve(
+                        join(
+                            __dirname,
+                            '..',
+                            "browser"
+                        )
+                    ),
+                },
+            },
+        };
     }
 }
 
