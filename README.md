@@ -96,6 +96,7 @@ The method returns a promise with the loaded plugin class and a type:
 loadComponent(
     'KoroProductOrigin', 
     'koro-product-origin-map'
+    require.resolveWeak('./plugin/koro-product-origin-map.js')
 ).then(({ default: KoroProductOriginMap, type }) => {});
 ```
 
@@ -111,6 +112,8 @@ Usign object destructring you're getting `default` which is the plugin class and
 The Webpack plugin injects a new entry point using the provided chunk name pointing to an absolute path to a file within your plugin. Usually it's a plugin class. Additionally the webpack plugin registeres a new instance of Shopware's `WebpackCopyAfterBuild` plugin to copy over the new file for the defined entry point to the destination `src/public/storefront/js`. This way the file isn't getting collected by Shopware's theme compilation process.
 
 The browser library provides replicates Webpack's `loadScript` method. Based on the provided arguments `pluginName` and `chunkName` the correct path to your newly built JavaScript file gets created and a `script` element gets injected into the `head` element of your document. A `onload` handler does a lookup on the object `webpackJsonp` to make sure the chunk got loaded correctly. Next up, we're using Webpack's special method `__webpack_require__` which takes a `moduleId` to wire up the loaded plugin into Webpack's dependency lookup tree.
+
+In the hot module reloading mode, we had to work around the fact that all separated entries are getting collected within a single chunk file called `storefront`. Therefore we're not actually dynamically loading the file, instead we're dynamically injected the file you wanna dynamically load inside the `storefront` bundle and using the third argument `cacheKey` of the method `loadComponent` to look up the module you wanna load.
 
 ## License
 
