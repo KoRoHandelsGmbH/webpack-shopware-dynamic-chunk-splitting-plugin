@@ -7,6 +7,14 @@
 
 Webpack plugin which allows you to mark certain files as entry points for dynamic imports which allows you to dynamically import components. It supports the production as well as the hot module reloading mode.
 
+## Features
+
+* Flawlessly integrates with Shopware 6
+* Easy to use way to declare certain files of a plugin as a dynamically component
+* Doesn't modify the default behavior of Shopware 6 building pipeline
+* Browser library to load your dynamic component
+* Hot module reloading support
+
 ## Installation
 
 ```bash
