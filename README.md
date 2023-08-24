@@ -40,7 +40,7 @@ module.exports = ({ config }) => {
                 )
             }
         }]
-    })
+    });
     config.plugins.push(dynamicChunkSplittingPlugin);
 }
 ```

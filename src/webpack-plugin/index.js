@@ -51,7 +51,11 @@ new WebpackShopwareDynamicChunkSplittingPlugin({
                 return accumulator;
             }, []);
 
-            compiler.options.entry.storefront = [...compiler.options.entry.storefront, ...pluginProvideDefinitions];
+            compiler.options.entry.storefront.import = [
+                ...compiler.options.entry.storefront.import,
+                ...pluginProvideDefinitions
+            ];
+
             return;
         }
 
