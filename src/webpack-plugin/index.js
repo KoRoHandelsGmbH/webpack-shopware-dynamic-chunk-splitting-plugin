@@ -105,10 +105,18 @@ new WebpackShopwareDynamicChunkSplittingPlugin({
 
             const { mapping } = pluginsMap.get(chunkName);
 
+            const transformedMapping = {};
+            Object.keys(mapping).forEach((key) => {
+                const value = mapping[key];
+                transformedMapping[key] = {
+                    'import': [value]
+                }
+            });
+
             // Adds custom entry points
             compiler.options.entry = {
                 ...compiler.options.entry,
-                ...mapping
+                ...transformedMapping
             };
             Object.keys(mapping).forEach((name) => {
                 // Remap destination path
