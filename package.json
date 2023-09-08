@@ -17,7 +17,11 @@
   "author": "klarstil",
   "license": "MIT",
   "dependencies": {
-    "@shopware-ag/webpack-copy-after-build": "^1.0.1"
+    "@shopware-ag/webpack-copy-after-build": "^1.0.1",
+    "webpack": "^5.75.0"
+  },
+  "peerDependencies": {
+    "webpack": "5.x"
   },
   "publishConfig": {
     "access": "public"

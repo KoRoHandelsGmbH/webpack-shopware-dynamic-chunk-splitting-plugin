@@ -1,4 +1,8 @@
 const WebpackCopyAfterBuildPlugin = require('@shopware-ag/webpack-copy-after-build');
+const ConcatenatedModule = require('webpack/lib/optimize/ConcatenatedModule')
+const { mergeRuntimeOwned, getEntryRuntime } = require('webpack/lib/util/runtime');
+const markAsUsed = require('./markAsUsed');
+
 const {
     toKebabCase,
     toPascalCase,
@@ -17,7 +21,7 @@ class WebpackShopwareDynamicChunkSplittingPlugin {
         if (!hasProperty(this.options, 'plugins')) {
             console.error();
             console.error(
-                `[${PLUGIN_NAME}] Missing option "plugins". Please define plugin 
+                `[${PLUGIN_NAME}] Missing option "plugins". Please define plugin
 names which should be handled as assets, so they're not getting
 merged together in an "all.js" file from Shopware.
 The plugin names can either be kebab case or pascal case e.g.:
@@ -69,6 +73,43 @@ new WebpackShopwareDynamicChunkSplittingPlugin({
 
             return accumulator;
         }, new Map());
+
+        const pluginTargetChunks = this.options.plugins.reduce((accumulator, plugin) => {
+            const name = Object.keys(plugin)[0];
+            const chunks = Object.keys(plugin[name]);
+
+            accumulator.push(...chunks);
+            return accumulator;
+        }, []);
+
+        compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+            const { moduleGraph } = compilation;
+
+            compilation.hooks.afterOptimizeChunkModules.tap(PLUGIN_NAME, (chunks) => {
+                const targetChunks = Array.from(chunks).filter((chunk) => {
+                    return pluginTargetChunks.includes(chunk.name);
+                })
+
+                let runtime = undefined;
+                for (const [name, { options }] of compilation.entries) {
+                    runtime = mergeRuntimeOwned(runtime, getEntryRuntime(compilation, name, options));
+                }
+
+                targetChunks.forEach((targetChunk) => {
+                    compilation.chunkGraph.getChunkModulesIterable(targetChunk).forEach((module) => {
+                        if (!module.type.startsWith('javascript/')) {
+                            return;
+                        }
+
+                        markAsUsed(module, moduleGraph, runtime);
+
+                        if (module instanceof ConcatenatedModule) {
+                            markAsUsed(module.rootModule, moduleGraph, runtime)
+                        }
+                    });
+                })
+            });
+        });
 
         compiler.options.plugins.forEach((plugin) => {
             // We just need to go over the webpack copy after build plugin

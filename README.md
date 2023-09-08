@@ -1,4 +1,4 @@
-# Webpack - Dynamic chunk splitting plugin for Shopware 6
+# Webpack - Dynamic chunk splitting plugin for Shopware 6.5.x
 
 <div align="center">
 
@@ -9,9 +9,9 @@ Webpack plugin which allows you to mark certain files as entry points for dynami
 
 ## Features
 
-* Flawlessly integrates with Shopware 6
+* Flawlessly integrates with Shopware 6.5
 * Easy to use way to declare certain files of a plugin as a dynamically component
-* Doesn't modify the default behavior of Shopware 6 building pipeline
+* Doesn't modify the default behavior of Shopware 6.5 building pipeline
 * Browser library to load your dynamic component
 * Hot module reloading support
 
@@ -71,7 +71,10 @@ loadComponent(
         KoroProductOriginMap,
         element
     );
-    PluginManager.initializePlugin('KoroWorldMap', element);
+    PluginManager.initializePlugin(
+        'KoroWorldMap',
+        element
+    );
 });
 ```
 
@@ -113,14 +116,14 @@ Usign object destructring you're getting `default` which is the plugin class and
 
 * `load` - First load of the component
 * `timeout` - Loading the component run into a 120 second timeout.
-* `cache-hit` - Component got loaded already and is in Webpack's global cache object e.g. `webpackJsonp`
+* `cache-hit` - Component got loaded already and is in Webpack's global cache object e.g. `webpackChunk`
 * `missing` -  A 404 got returned from the HTTP request
 
 ## How it works
 
-The Webpack plugin injects a new entry point using the provided chunk name pointing to an absolute path to a file within your plugin. Usually it's a plugin class. Additionally the webpack plugin registeres a new instance of Shopware's `WebpackCopyAfterBuild` plugin to copy over the new file for the defined entry point to the destination `src/public/storefront/js`. This way the file isn't getting collected by Shopware's theme compilation process.
+The Webpack plugin injects a new entry point using the provided chunk name pointing to an absolute path to a file within your plugin. Usually it's a plugin class. Additionally the webpack plugin registeres a new instance of Shopware's `WebpackCopyAfterBuild` plugin to copy over the new file for the defined entry point to the destination `src/public/storefront/js`. This way the file isn't getting collected by Shopware's theme compilation process. Last but not least the plugin marks the entry point's chunk as non side effect free to disable tree-shaking of unused exports.
 
-The browser library provides replicates Webpack's `loadScript` method. Based on the provided arguments `pluginName` and `chunkName` the correct path to your newly built JavaScript file gets created and a `script` element gets injected into the `head` element of your document. A `onload` handler does a lookup on the object `webpackJsonp` to make sure the chunk got loaded correctly. Next up, we're using Webpack's special method `__webpack_require__` which takes a `moduleId` to wire up the loaded plugin into Webpack's dependency lookup tree.
+The browser library provides replicates Webpack's `loadScript` method. Based on the provided arguments `pluginName` and `chunkName` the correct path to your newly built JavaScript file gets created and a `script` element gets injected into the `head` element of your document. A `onload` handler does a lookup on the object `webpackChunk` to make sure the chunk got loaded correctly. Next up, we're using Webpack's raw parser method `__webpack_require__` which takes a `moduleId` to wire up the loaded plugin into Webpack's dependency lookup tree.
 
 In the hot module reloading mode, we had to work around the fact that all separated entries are getting collected within a single chunk file called `storefront`. Therefore we're not actually dynamically loading the file, instead we're dynamically injected the file you wanna dynamically load inside the `storefront` bundle and using the third argument `cacheKey` of the method `loadComponent` to look up the module you wanna load.
 

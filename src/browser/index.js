@@ -7,20 +7,11 @@ const moduleMap = [];
  * Helper method which checks if global `webpackJsonp` variable contains
  * the chunk we're looking for.
  *
- * @param {string} chunkName
- * @returns {boolean|string}
+ * @param {number} cacheKey
+ * @returns {boolean}
  */
-const getChunkKeyByName = (chunkName) => {
-    const definition = window.webpackJsonp.find((element) => {
-        const name = element[0][0];
-        return name === chunkName;
-    });
-
-    if (!definition) {
-        return false;
-    }
-
-    return definition[definition.length - 1][0][0];
+const getChunkKeyByName = (cacheKey) => {
+    return Object.keys(__webpack_modules__).includes(cacheKey);
 }
 
 /**
@@ -29,7 +20,7 @@ const getChunkKeyByName = (chunkName) => {
  *
  * @param {string} pluginName
  * @param {string} chunkName
- * @param {string} cacheKey
+ * @param {number} cacheKey
  * @param {string} [bundleLoadingPath='/bundles/14cdd85b63697b04af2302ece9ac3239?12321123']
  * @returns {Promise<Error>|Promise<Module>}
  */
@@ -88,14 +79,8 @@ const loadComponent = async (pluginName, chunkName, cacheKey, bundleLoadingPath 
                 return;
             }
 
-            key = getChunkKeyByName(chunkName);
-            if (!key) {
-                reject(new Error('Cache key not found.'));
-                return;
-            }
-
             /* eslint-disable */
-            const module = __webpack_require__(key);
+            const module = __webpack_require__(cacheKey);
             /* eslint-enable */
             resolve({ ...module, ...{ type: event.type } } );
         };
